@@ -1,0 +1,370 @@
+---
+title: "Rの導入と可視化"
+output: html_notebook
+---
+
+### 作業ディレクトリの指定
+
+プロジェクトからではなく, 直接R(Studio)を開いた場合, 作業ディレクトリ(フォルダ)の指定が必要.
+作業ディレクトリを指定しない場合, Documentなどがデフォルトで指定されている場合が多い.
+現在の作業ディレクトリを確認するためには`getwd()`関数.
+
+```{r}
+getwd()
+```
+
+任意の作業ディレクトリを指定するためには, `setwd()`関数.
+パスの指定は相対パスでも絶対パスでも可.
+
+```{r}
+setwd("ここにパスを打ち込む")
+```
+
+### 新しいディレクトリ(フォルダ)の作成
+
+新しいディレクトリ(フォルダ)を作成するためには`dir.create()`関数を利用する.
+`data`というディレクトリを作成する.
+`data`のように関数内でその関数の処理を指定するものを引数という.
+
+```{r}
+dir.create("data")
+```
+
+### ディレクトリの内容を確認
+
+作業ディレクトリの内容を確認するには, `list.files()`関数.
+
+```{r}
+list.files()
+```
+
+### パッケージのインストール
+
+Rにはデフォルトで様々な関数が登録されている.
+それに加えて, CRANに様々な人がパッケージとして関数を公開している.
+CRANに登録されたパッケージをインストールするには, `install.packages()`関数を利用.
+
+```{r}
+install.packages("dplyr")
+install.packages("readr")
+install.packages("ggplot2")
+```
+
+### パッケージの利用
+
+インストールされたファイルなどは適当な場所に保存されるのでユーザーが操作する必要はない.
+インストールしたパッケージを利用するには, `library()関数`で利用するパッケージ名を指定し, パッケージを読み込む.
+この作業はセッションを再開する度に必要.
+
+```{r}
+library(dplyr)
+library(readr)
+library(ggplot2)
+```
+
+### `here`パッケージ
+
+データの場所の指定は相対パスか絶対パスで指定できる.
+しかし, OSによりパスの表記方法が異なる.
+この問題を解決してくれるのが`here`パッケージ.
+プロジェクト(.Rproj)を起点にデータがどこにあるのかOSに関わらず同様に記述できる.
+フォルダはいくつあっても構わない.
+
+```{r}
+install.packages("here")
+library(here)
+here("フォルダ名", "ファイル名")
+```
+
+### 四則演算
+
+簡単な四則演算を行う.
+`*`は掛け算, `/`は割り算を示す.
+数学と同じく()内は優先して評価される.
+
+```{r}
+1 + 2 * 3 / 4
+(1 + 2) * 3 / 4
+```
+
+### 関数を利用した計算
+
+`exp()`関数はネイピア数$e$を底とし, 引数を指数として計算.
+`sqrt()`関数は$\sqrt{}$を表す.
+`log()`関数は自然対数であり, 2を底とするときは`log2()`, 10を底とするときは`log10()`を利用する.
+`^`は累乗, `10E04`は10000を表す.
+
+```{r}
+exp(2) * 10 ^ 2
+sqrt(2) * 10E04
+log(2)
+```
+
+### 数値をオブジェクトに格納する
+
+数値をオブジェクトに格納して計算する.
+`<-`は左側の名前のオブジェクトに右側の要素を代入することを示す.
+`=`でも構わないが, Rではよく`<-`が利用される.
+`sum()`関数は, 引数を足し合わせる.
+
+```{r}
+x <- 3
+y <- 9
+x + x
+sum(x, y)
+```
+
+### 数値をオブジェクトに格納する2
+
+オブジェクトは, 単一の数値だけでなく, ベクトルや行列, データフレームを格納できる.
+他にも, いくつかの動作を関数として格納したり, 式などを格納することもできる.
+`c()`は数値などを連結するコンバイン関数.
+`:`は`start:end`となっており, startからendまでの公差を1とする等差数列を作成する.
+
+```{r}
+a <- c(1,2,3)
+b <- 4:6
+a / b
+```
+
+### データフレームの作成
+
+データフレームを作成する.
+`rep()`関数は要素を複製する関数.
+
+```{r}
+c <- 1:10
+d <- c * 2
+e <- c(rep("aa",3),rep("bb",4), rep("cc",3))
+f <- data.frame(y = c, x = d, cha = e)
+```
+
+### 変数名の確認
+
+そのオブジェクトがどのような変数によって構成されているか確認する.
+変数名を確認するためには, `names()`を利用.
+
+```{r}
+names(f)
+```
+
+### 先頭から数行を表示
+
+オブジェクトを先頭から数行を表示する.
+先頭行から6行分表示するためには, `head()`を利用する.
+`head(x, n = 5L)`などと`n = 5L`のように表示する行数を指定できる.
+第2引数に指定する場合は`n =`は省略可.
+`5L`の`L`は, `5`が整数であることを示している.
+
+```{r}
+head(f)
+```
+
+### データ構造の確認
+
+変数の型なども含めて構造を確認する.
+第一引数に指定した変数がどのようなデータであるのか示す.
+今回はデータフレームのため, 観察数(行)と列数が示されている.
+各列ごとに列名と:の後にそのデータ型と最初からいくつかのデータが表示される.
+
+```{r}
+str(f)
+```
+
+
+### 別の方法でデータ構造を確認
+
+データ構造を別の方法で確認してみる.
+`dplyr`パッケージの`glimpse()`関数を利用する.
+`dplyr::glimpse()`は`dplyr`パッケージの`glimpse()`関数を利用することを明示的に示す記法であり, `library`すれば基本的には必要はない.
+
+```{r}
+dplyr::glimpse(f)
+```
+
+好みに合わせて使い分ける.
+
+### 記述統計
+
+記述統計を見るには, `summary()`を利用する.
+データ型が数値の場合には, 最小値, 第一四分位数(25%), 中央値, 平均, 第三四分位数(75%), 最大値が示される.
+欠損値がある場合には, その数も合わせて表示される.
+文字列の場合には, 基本的にいくつデータが存在するのかしか表示されない.
+
+```{r}
+summary(f)
+```
+
+### データの書き出し
+
+`g`というデータフレームを作成し, `write.csv()`関数を利用して, `data`フォルダに`data.csv`というcsvファイルを作成.
+`seq()`関数は等差数列を作る関数.
+`from`は初項, `to`は末項, `by`は公差, `length.out`は項数を表す.
+
+```{r}
+ABCDE <- c("A", "B", "C", "D", "E")
+Japanese <- c("壱", "弐", "参", "四", "五")
+g <- data.frame(Int = 1:300000, 
+                Int2 = seq(from = 0, by = 2.5, 
+                           length.out = 300000), 
+                fac = rep(ABCDE, each = 2, times = 30000),
+                jpn = rep(Japanese, each =2, times = 30000))
+write.csv(g, here("data", "data.csv"), 
+          quote=FALSE, row.names=FALSE)
+```
+
+### データの読み込み
+
+最もオーソドックスな読み込み方は, `read.csv()`
+
+```{r}
+dat1 <- read.csv(here("data", "data.csv"), header = TRUE) 
+```
+
+最近増えてきているのは, `readr`パッケージに含まれる`read_csv()`.
+自由度も高く, やや速い.
+
+```{r}
+dat2 <- readr::read_csv(here("data", "data.csv"))
+```
+
+最後に`data.table`パッケージの`fread()`.
+とても早いが, やや自由度に欠ける.
+大量のデータを読み込む際にはおすすめ.
+
+```{r}
+install.packages("data.table"); library(data.table)
+dat3 <- data.table::fread(here("data", "data.csv"),
+                          data.table = FALSE)
+```
+### 文字コード
+
+日本語を含むデータを読み書きする際, 文字コードに注意.
+OSをまたいで利用する際には文字化けをしないように工夫が必要.
+Windowsで作られたファイルを読み込む際には `Encoding=cp932`, MacやLinuxで作られたファイルを読み込む際には `Encoding=UTF8`を指定する.
+書き出す際に文字コードを指定するには, `fileEncoding = "UTF-8"`を引数に追加する.
+
+
+```{r}
+dat1 <- read.csv(here("data", "data.csv"), header = TRUE, 
+                 fileEncoding = "UTF8")
+dat2 <- readr::read_csv(here("data", "data.csv"), 
+                        locale=locale(encoding="UTF8"))
+write.csv(dat2, here("data", "data.csv"), 
+          quote=FALSE, row.names=FALSE,
+          fileEncoding = "UTF-8")
+```
+
+### Excelファイルの読み込み
+
+Excelファイルを読み込むための関数も様々ある.
+ここでは, `readxl`パッケージの`read_excel()`を紹介.
+
+```{r}
+install.packages("readxl")
+excel <- readxl::read_excel("data.xlsx", 
+                            sheet = "シート名or番号")
+```
+
+### 重ね書きのイメージ 1
+
+まず下地を作る.
+`ggplot()`関数で白の下地を用意する.
+第一引数にプロットするデータを指定する(後で指定も可能).
+2行目の`aes()`関数でどの列をx軸やy軸にプロットするのかを指定.
+なお、dataやx,yは順番を変えなければ省略可能.
+
+```{r}
+library(ggplot2)
+ggplot(data = iris) +
+  aes(x = Petal.Length)
+```
+
+### 重ね書きのイメージ 2
+
+次にヒストグラムを作成し, プロットする.
+ヒストグラムを追加するには用意した下地と`geom_histogram()`を`+`でつなぐ.
+
+```{r}
+ggplot(data = iris) +
+  aes(x = Petal.Length) +
+  geom_histogram()
+```
+
+### 重ね書きのイメージ 3
+
+3行目に`y = ..density..`を追加し, y軸を割合に変更する.
+4行目に`fill = "blue"`を追加し, ヒストグラムに色を付ける.
+ヒストグラムを描画した図に`geom_density()`で密度曲線を追加する.
+引数の`alpha`は密度曲線の中の透明度.
+今回は0%を指定して透明にする.
+
+```{r}
+ggplot(data = iris) +
+  aes(x = Petal.Length,
+      y = ..density..) +
+  geom_histogram(fill = "blue") +
+  geom_density(alpha = 0)
+```
+
+### 重ね書きのイメージ 4
+
+論文に載せやすいように背景は白くする.
+`theme_classic()`で背景を白く, 重要でない線はなくすなど行う.
+
+```{r}
+ggplot(data = iris) +
+  aes(x = Petal.Length,
+      y = ..density..) +
+  geom_histogram(fill = "blue") +
+  geom_density(alpha = 0) +
+  theme_classic()
+```
+
+### 重ね書きのイメージ 5
+
+最後にタイトルをつける.
+タイトルは`ggtitle()`で指定.
+タイトルの文字列はダブルクオーテーション(`"`)で囲む.
+
+```{r}
+ggplot(data = iris) +
+  aes(x = Petal.Length,
+      y = ..density..) +
+  geom_histogram(fill = "blue") +
+  geom_density(alpha = 0) +
+  theme_classic() +
+  ggtitle("histogram and density")
+```
+
+### 1枚のグラフにカテゴリーごとのヒストグラムを描く
+
+`aes(fill= Category)`とすることでカテゴリーごとに色分けができる.
+`geom_histogram(position = "identity")`とすると1つの図の中でカテゴリーごとにヒストグラムが描ける.
+
+```{r}
+ggplot(data = iris) +
+  aes(x = Petal.Length,
+      y = ..density..,
+      fill = Species) +
+  geom_histogram(
+    position = "identity",
+    alpha = 0.5) +
+  geom_density(alpha = 0)
+```
+
+### 別々のグラフにカテゴリーごとのグラフを描く
+
+`facet_wrap(~Category)`とすることで, 別々の図にカテゴリーごとのヒストグラムを描ける.
+`scales = "free"`でx軸やy軸をそれぞれのカテゴリーに最適化する.
+
+```{r}
+ggplot(data = iris) +
+  aes(x = Petal.Length,
+      y = ..density..,
+      fill = Species) +
+  geom_histogram() +
+  geom_density(alpha = 0) + 
+  facet_wrap(~Species,
+             scales = "free")
+```
